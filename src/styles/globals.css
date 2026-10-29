@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  color: #17233c;
+  background: #f7f8fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #17233c;
+  --ink-soft: #44516a;
+  --muted: #78849a;
+  --line: #e4e8f0;
+  --surface: #ffffff;
+  --canvas: #f7f8fb;
+  --primary: #4658bd;
+  --primary-dark: #35469f;
+  --primary-soft: #eef0ff;
+  --green: #18764f;
+  --green-soft: #e8f6ef;
+  --amber: #92610c;
+  --amber-soft: #fff5dc;
+  --red: #b13b46;
+  --red-soft: #fff0f0;
+  --radius-sm: 9px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 2px 8px rgba(27, 40, 76, 0.045);
+  --shadow-md: 0 14px 40px rgba(27, 40, 76, 0.09);
+  --font-display: "Manrope", "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--ink); background: var(--canvas); }
+body, button, input, select, textarea { font-family: "DM Sans", "Segoe UI", sans-serif; }
+button, input, select, textarea { font-size: 0.94rem; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; }
+h1, h2, h3, p { margin-top: 0; }
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.035em; }
+::selection { color: #fff; background: #5263c6; }
+:focus-visible { outline: 3px solid #8e9bff; outline-offset: 3px; }
+
+.container { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+.app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+.main-content { flex: 1; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.muted { color: var(--muted); }
+
+@media (max-width: 640px) {
+  .container { width: min(100% - 32px, 1120px); }
+}

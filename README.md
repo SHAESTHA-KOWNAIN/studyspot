@@ -6,7 +6,7 @@ StudySpot helps students find libraries, quiet study zones, reading rooms, and g
 
 ## Project status
 
-The React frontend is implemented and works independently with mock data. The Node.js/Express/MongoDB backend has not been implemented. Its planned scope is documented in [server/README.md](./server/README.md), and the proposed API contract is in [docs/API.md](./docs/API.md).
+The React frontend is implemented and works independently with mock data. The backend now includes availability report submission, history, latest-report retrieval, and freshness handling. Authentication and study-space APIs are still being implemented; report submissions fail closed until the authentication middleware is wired in. See [server/README.md](./server/README.md) and [docs/API.md](./docs/API.md).
 
 ## Repository structure
 
@@ -73,7 +73,7 @@ Frontend route protection is for user experience only. Real authentication and a
 | Vitest, React Testing Library | Frontend tests |
 | localStorage | Development mock-data persistence |
 
-**Planned backend:** Node.js, Express.js, MongoDB, Mongoose, and server-side authentication. No backend implementation or completed API integration is included yet.
+**Backend:** Node.js, Express.js, MongoDB, and Mongoose. Reporting endpoints are implemented; authentication, study-space APIs, and full frontend integration remain in progress.
 
 ## Run the client
 
@@ -98,7 +98,7 @@ npm run build     # Build the production bundle
 npm run preview   # Preview the production build
 ```
 
-See [docs/TESTING.md](./docs/TESTING.md) for implemented frontend coverage and planned backend integration tests.
+See [docs/TESTING.md](./docs/TESTING.md) for implemented frontend and reporting API tests and planned backend integration tests.
 
 ## Demo accounts
 
@@ -157,7 +157,7 @@ Mock data changes persist in browser localStorage. The moderator dashboard offer
 
 ## Planned API
 
-The client adapter is prepared for the endpoint families below. Exact request/response shapes, validation errors, authorization policy, and some endpoint semantics remain to be confirmed; the backend and integration are not yet implemented or tested.
+The client adapter is prepared for the endpoint families below. Report submission, history, and latest-status routes are implemented; authentication and study-space routes and full client integration remain to be implemented. See [docs/API.md](./docs/API.md) for the reporting contract and remaining decisions.
 
 | Method | Endpoint | Purpose |
 |---|---|---|

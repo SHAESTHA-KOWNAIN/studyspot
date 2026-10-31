@@ -26,18 +26,17 @@ Build verification:
 npm run build
 ```
 
-## Backend integration tests (planned)
+## Backend report tests (implemented)
 
-There is no backend or backend test suite yet. When server implementation begins, add isolated integration tests against a disposable test database and exercise at least:
+The report API suite runs from the repository root with:
 
-- Registration validation, duplicate users, password hashing, and login.
-- JWT authentication, expired/invalid tokens, and member/moderator authorization.
-- Space create, get, update, filter combinations, and deactivation.
-- Report creation validation, reporter identity, timestamp generation, and history ordering.
-- Preservation of report history after deactivation.
-- Stable success/error response formats expected by the client API adapter.
+```sh
+npm --prefix server test
+```
 
-Tests must not depend on production credentials or a production database. Configuration, test framework, fixtures, and CI commands remain to be selected by the backend team.
+The tests use `mongodb-memory-server` and Supertest; they do not connect to a development or production database. They cover report creation and validation, authentication integration behavior, report history and pagination, safe reporter population, latest-report selection, and freshness boundaries/configuration.
+
+Authentication integration is tested with a test-only middleware. Production report submission remains fail-closed until the authentication module is wired in. Registration/login, JWT expiry, study-space CRUD, and end-to-end integration tests remain for the corresponding team members.
 
 ## End-to-end testing (planned)
 

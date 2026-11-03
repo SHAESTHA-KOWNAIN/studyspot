@@ -1,4 +1,4 @@
-﻿
+
 const crypto = require("crypto");
 const ModeratorInvitation = require("../src/models/ModeratorInvitation");
 const { after, before, beforeEach, describe, it } = require("node:test");
@@ -157,6 +157,55 @@ describe("authentication API", () => {
         assert.equal(missing.status, 401);
         assert.equal(invalid.status, 401);
     });
+
+    it("rejects moderator invitation creation without authentication", async () => {
+        const response = await request(app)
+            .post("/api/auth/moderator-invitations");
+
+        assert.equal(response.status, 401);
+    });
+
+    it("prevents a member from creating moderator invitations", async () => {
+        const registration = await request(app)
+            .post("/api/auth/register")
+            .send(account);
+
+        const memberToken = registration.body.data.token;
+
+        const response = await request(app)
+            .post("/api/auth/moderator-invitations")
+            .set("Authorization", `Bearer ${memberToken}`);
+
+        assert.equal(response.status, 403);
+    });
+
+    it("allows a moderator to create moderator invitations", async () => {
+        // First create a valid moderator using an invitation.
+        const initialInvitation = await createModeratorInvitation();
+
+        const registration = await request(app)
+            .post("/api/auth/register")
+            .send({
+                name: "Test Moderator",
+                email: "authorized-moderator@example.com",
+                password: "StrongPass123!",
+                confirmPassword: "StrongPass123!",
+                invitationToken: initialInvitation.token
+            });
+
+        assert.equal(registration.status, 201);
+        assert.equal(registration.body.data.user.role, "moderator");
+
+        const moderatorToken = registration.body.data.token;
+
+        // Now use the moderator's JWT to create another invitation.
+        const response = await request(app)
+            .post("/api/auth/moderator-invitations")
+            .set("Authorization", `Bearer ${moderatorToken}`);
+
+        assert.equal(response.status, 201);
+    });
+
 
     it("rejects a token when its user no longer exists", async () => {
         const registration = await request(app)

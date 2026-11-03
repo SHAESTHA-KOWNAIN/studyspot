@@ -1,4 +1,7 @@
 ﻿const authService = require("../services/authService");
+const {
+    createModeratorInvitation
+} = require("../services/moderatorInvitationService");
 
 function sendError(res, status, message) {
     return res.status(status).json({
@@ -17,7 +20,13 @@ function publicUser(user) {
 }
 
 async function register(req, res) {
-    const { name, email, password, confirmPassword } = req.body ?? {};
+    const {
+        name,
+        email,
+        password,
+        confirmPassword,
+        invitationToken
+    } = req.body ?? {};
 
     if (
         typeof name !== "string" ||
@@ -26,6 +35,13 @@ async function register(req, res) {
         typeof confirmPassword !== "string"
     ) {
         return sendError(res, 400, "All registration fields are required.");
+    }
+
+    if (
+        invitationToken !== undefined &&
+        typeof invitationToken !== "string"
+    ) {
+        return sendError(res, 400, "Invalid invitation token.");
     }
 
     if (name.trim().length < 2 || name.trim().length > 80) {
@@ -45,7 +61,12 @@ async function register(req, res) {
     }
 
     try {
-        const data = await authService.register({ name, email, password });
+        const data = await authService.register({
+            name,
+            email,
+            password,
+            invitationToken
+        });
 
         return res.status(201).json({
             success: true,
@@ -56,7 +77,9 @@ async function register(req, res) {
             return sendError(res, 409, "An account with this email already exists.");
         }
 
-        if (error.status) return sendError(res, error.status, error.message);
+        if (error.status) {
+            return sendError(res, error.status, error.message);
+        }
 
         console.error("Registration failed:", error);
         return sendError(res, 500, "Unable to create account.");
@@ -83,14 +106,16 @@ async function login(req, res) {
             data
         });
     } catch (error) {
-        if (error.status) return sendError(res, error.status, error.message);
+        if (error.status) {
+            return sendError(res, error.status, error.message);
+        }
 
         console.error("Login failed:", error);
         return sendError(res, 500, "Unable to log in.");
     }
 }
 
-function getCurrentUser(req, res) {
+async function getCurrentUser(req, res) {
     return res.status(200).json({
         success: true,
         data: {
@@ -99,4 +124,39 @@ function getCurrentUser(req, res) {
     });
 }
 
-module.exports = { register, login, getCurrentUser };
+async function createModeratorInvite(req, res) {
+    try {
+        const { token, expiresAt } =
+            await createModeratorInvitation();
+
+        const frontendUrl = (
+            process.env.CLIENT_URL || "http://localhost:5173"
+        ).replace(/\/$/, "");
+
+        const invitationLink =
+            `${frontendUrl}/register?invite=${encodeURIComponent(token)}`;
+
+        return res.status(201).json({
+            success: true,
+            data: {
+                invitationLink,
+                expiresAt
+            }
+        });
+    } catch (error) {
+        console.error("Moderator invitation failed:", error);
+
+        return sendError(
+            res,
+            500,
+            "Unable to create moderator invitation."
+        );
+    }
+}
+
+module.exports = {
+    register,
+    login,
+    getCurrentUser,
+    createModeratorInvite
+};

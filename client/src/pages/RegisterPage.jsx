@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, BookOpen, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { validateRegistration } from "../utils/validation.js";
@@ -10,6 +11,9 @@ const useMock = import.meta.env.VITE_USE_MOCK_API !== "false";
 export default function RegisterPage() {
   const { user, loading, register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const invitationToken = searchParams.get("invite");
 
   const [values, setValues] = useState({
     name: "",
@@ -44,12 +48,16 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      await register(values);
+      await register({
+        ...values,
+        ...(invitationToken ? { invitationToken } : {}),
+      });
+
       navigate("/spaces", { replace: true });
     } catch (error) {
-        setRequestError(
-          error.userMessage || "Registration failed. Please try again."
-        );
+      setRequestError(
+        error.userMessage || "Registration failed. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -67,14 +75,22 @@ export default function RegisterPage() {
 
         <div className="auth-heading">
           <span className="eyebrow">Make campus a little easier</span>
-          <h1>Create your account</h1>
-          <p>Join students sharing useful study-space updates.</p>
+          <h1>
+            {invitationToken
+              ? "Create your moderator account"
+              : "Create your account"}
+          </h1>
+          <p>
+            {invitationToken
+              ? "Complete registration using your moderator invitation."
+              : "Join students sharing useful study-space updates."}
+          </p>
         </div>
 
         {useMock && (
           <p className="mock-auth-disclaimer">
-            Development-only mock authentication. New accounts are members;
-            moderator access is assigned by the backend in a production setup.
+            Development-only mock authentication. Moderator invitations
+            require the real backend.
           </p>
         )}
 
